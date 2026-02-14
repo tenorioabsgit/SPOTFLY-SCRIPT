@@ -135,10 +135,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signInWithGoogleAuth(): Promise<{ success: boolean; error?: string }> {
     try {
-      await promptAsync();
+      const result = await promptAsync();
+      if (result?.type === 'error') {
+        return { success: false, error: result.error?.message || 'Erro ao conectar com Google.' };
+      }
+      if (result?.type === 'dismiss' || result?.type === 'cancel') {
+        return { success: false, error: 'Login com Google cancelado.' };
+      }
       return { success: true };
     } catch (e: any) {
-      return { success: false, error: 'Erro ao conectar com Google.' };
+      console.error('Google auth error:', e);
+      return { success: false, error: 'Erro ao conectar com Google. Tente novamente.' };
     }
   }
 

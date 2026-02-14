@@ -47,8 +47,9 @@ export default function RegisterScreen() {
     setIsLoading(false);
     if (!result.success) {
       Alert.alert('Erro', result.error || 'Falha ao criar conta.');
+    } else {
+      Alert.alert('Conta criada!', `Bem-vindo ao Spotfly, ${displayName}!`);
     }
-    // Navigation handled by AuthContext via onAuthStateChanged
   }
 
   async function handleGoogleSignUp() {
