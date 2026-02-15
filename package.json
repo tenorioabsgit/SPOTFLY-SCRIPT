@@ -5,7 +5,8 @@
   "description": "Automated copyleft music importer for Spotfly",
   "scripts": {
     "import-music": "npx tsx scripts/import-music/index.ts",
-    "import-music:dry-run": "DRY_RUN=1 npx tsx scripts/import-music/index.ts"
+    "import-music:dry-run": "DRY_RUN=1 npx tsx scripts/import-music/index.ts",
+    "seed-admin": "npx tsx scripts/seed-admin.ts"
   },
   "dependencies": {
     "firebase-admin": "^13.6.1"
