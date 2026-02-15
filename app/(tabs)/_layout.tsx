@@ -1,16 +1,25 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Tabs, useRouter } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../src/constants/Colors';
 import { Layout } from '../../src/constants/Layout';
 import MiniPlayer from '../../src/components/MiniPlayer';
 import { usePlayer } from '../../src/contexts/PlayerContext';
+import { useAuth } from '../../src/contexts/AuthContext';
 import { useLanguage } from '../../src/contexts/LanguageContext';
 
 export default function TabLayout() {
   const { currentTrack } = usePlayer();
+  const { user } = useAuth();
   const { t } = useLanguage();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.replace('/(auth)/login');
+    }
+  }, [user]);
 
   return (
     <View style={styles.container}>
