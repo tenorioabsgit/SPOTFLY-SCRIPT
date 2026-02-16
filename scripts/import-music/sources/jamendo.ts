@@ -1,5 +1,5 @@
 import { TrackRecord, SourceResult } from '../types';
-import { sanitizeTrack, sleep, log } from '../utils';
+import { sanitizeTrack, sleep, log, isRockGenre } from '../utils';
 import * as admin from 'firebase-admin';
 
 const SOURCE = 'jamendo';
@@ -8,12 +8,11 @@ const PAGE_SIZE = 200;
 const PAGES_PER_GENRE = 5; // 1.000 tracks per genre
 const STATE_DOC = 'import-state/jamendo';
 
-// Genres to rotate through — covers the full Jamendo catalog
+// Rock-related genres only
 const GENRES = [
-  'pop', 'rock', 'electronic', 'hiphop', 'jazz',
-  'classical', 'reggae', 'metal', 'folk', 'latin',
-  'rnb', 'ambient', 'soundtrack', 'punk', 'blues',
-  'country', 'indie', 'dance', 'soul', 'world',
+  'rock', 'metal', 'punk', 'hardrock', 'hardcore',
+  'progressive', 'grunge', 'alternative', 'indie',
+  'postpunk', 'stonerrock', 'numetal', 'metalcore',
 ];
 
 // Different sort strategies to reach different parts of the catalog
@@ -177,6 +176,8 @@ export async function fetchJamendo(
 
       for (const t of data.results) {
         if (!t.audio && !t.audiodownload) continue;
+        const trackGenre = t.musicinfo?.tags?.genres?.[0] || '';
+        if (!isRockGenre(trackGenre)) continue; // Skip non-rock tracks
         const id = `jamendo-${t.id}`;
         if (seen.has(id)) continue;
         seen.add(id);
@@ -192,7 +193,7 @@ export async function fetchJamendo(
             duration: t.duration,
             artwork: t.album_image || t.image || '',
             audioUrl: t.audio || t.audiodownload,
-            genre: t.musicinfo?.tags?.genres?.[0] || 'Other',
+            genre: trackGenre,
             license: t.license_ccurl || 'Creative Commons',
           })
         );
